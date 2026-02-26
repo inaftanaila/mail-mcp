@@ -39,6 +39,10 @@ func RegisterListMailboxes(srv *mcp.Server) {
 }
 
 func HandleListMailboxes(ctx context.Context, request *mcp.CallToolRequest, input ListMailboxesInput) (*mcp.CallToolResult, any, error) {
+	if err := enforceAccountAccess(input.Account); err != nil {
+		return nil, nil, err
+	}
+
 	inputJSON, err := json.Marshal(input)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to marshal input for JXA: %w", err)

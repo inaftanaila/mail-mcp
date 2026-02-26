@@ -140,6 +140,10 @@ func run(options *opts.RunCmd) error {
 
 	ctx := context.Background()
 
+	if _, err := tools.LoadAccountPolicy(); err != nil {
+		return err
+	}
+
 	// Always add a logger to context (real logger if debug, no-op otherwise)
 	ctx = setupLogger(ctx, options.Debug)
 

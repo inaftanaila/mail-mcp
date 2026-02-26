@@ -53,6 +53,14 @@ func HandleReplaceOutgoingMessage(ctx context.Context, request *mcp.CallToolRequ
 	if input.OutgoingID == 0 {
 		return nil, nil, fmt.Errorf("outgoing_id is required")
 	}
+	if err := denyIDOnlyToolWhenPolicyEnabled("replace_outgoing_message"); err != nil {
+		return nil, nil, err
+	}
+	if input.Sender != nil {
+		if err := enforceSenderAccess(*input.Sender); err != nil {
+			return nil, nil, err
+		}
+	}
 	if err := mac.EnsureAccessibility(); err != nil {
 		return nil, nil, err
 	}

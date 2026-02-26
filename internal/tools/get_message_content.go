@@ -45,6 +45,10 @@ func HandleGetMessageContent(ctx context.Context, request *mcp.CallToolRequest, 
 		return nil, nil, fmt.Errorf("mailboxPath is required and must be a non-empty array")
 	}
 
+	if err := enforceAccountAccess(input.Account); err != nil {
+		return nil, nil, err
+	}
+
 	// Marshal input to JSON
 	inputJSON, err := json.Marshal(input)
 	if err != nil {

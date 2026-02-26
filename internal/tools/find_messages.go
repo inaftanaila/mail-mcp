@@ -61,6 +61,10 @@ func HandleFindMessages(ctx context.Context, request *mcp.CallToolRequest, input
 		return nil, nil, fmt.Errorf("mailboxPath is required")
 	}
 
+	if err := enforceAccountAccess(input.Account); err != nil {
+		return nil, nil, err
+	}
+
 	// Require at least one filter criterion
 	hasFilter := input.Subject != "" ||
 		input.Sender != "" ||

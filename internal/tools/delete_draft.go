@@ -38,6 +38,10 @@ func RegisterDeleteDraft(srv *mcp.Server) {
 }
 
 func HandleDeleteDraft(ctx context.Context, request *mcp.CallToolRequest, input DeleteDraftInput) (*mcp.CallToolResult, any, error) {
+	if err := denyIDOnlyToolWhenPolicyEnabled("delete_draft"); err != nil {
+		return nil, nil, err
+	}
+
 	// Prepare arguments for JXA
 	inputJSON, err := json.Marshal(input)
 	if err != nil {

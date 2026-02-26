@@ -31,6 +31,10 @@ func RegisterListOutgoingMessages(srv *mcp.Server) {
 }
 
 func HandleListOutgoingMessages(ctx context.Context, request *mcp.CallToolRequest, input struct{}) (*mcp.CallToolResult, any, error) {
+	if err := denyIDOnlyToolWhenPolicyEnabled("list_outgoing_messages"); err != nil {
+		return nil, nil, err
+	}
+
 	data, err := jxa.Execute(ctx, listOutgoingMessagesScript)
 	if err != nil {
 		return nil, nil, err

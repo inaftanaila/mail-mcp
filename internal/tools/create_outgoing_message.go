@@ -52,6 +52,9 @@ func HandleCreateOutgoingMessage(ctx context.Context, request *mcp.CallToolReque
 	if input.Account == "" || input.Subject == "" || input.Content == "" {
 		return nil, nil, fmt.Errorf("account, subject, and content are required")
 	}
+	if err := enforceAccountAccess(input.Account); err != nil {
+		return nil, nil, err
+	}
 	contentFormat, err := ValidateAndNormalizeContentFormat(input.ContentFormat)
 	if err != nil {
 		return nil, nil, err
