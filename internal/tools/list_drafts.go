@@ -48,6 +48,9 @@ func HandleListDrafts(ctx context.Context, request *mcp.CallToolRequest, input L
 	if input.Limit < 1 || input.Limit > 1000 {
 		return nil, nil, fmt.Errorf("limit must be between 1 and 1000")
 	}
+	if err := enforceAccountAccess(input.Account); err != nil {
+		return nil, nil, err
+	}
 
 	inputJSON, err := json.Marshal(input)
 	if err != nil {

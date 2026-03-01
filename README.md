@@ -255,6 +255,21 @@ mail-mcp
 
 ➡️ See [MCP Client Configuration](#mcp-client-configuration) to connect your MCP client.
 
+### Account Access Policy (Optional)
+
+Use environment variables to restrict account access:
+
+- `APPLE_MAIL_MCP_ALLOWED_ACCOUNTS`: comma-separated allowlist (only these account names/email identities are permitted)
+- `APPLE_MAIL_MCP_BLOCKED_ACCOUNTS`: comma-separated denylist (these account names/email identities are denied)
+
+Rules are case-insensitive. Set only one variable at a time. If both are set, the server fails at startup.
+
+Example:
+
+```bash
+export APPLE_MAIL_MCP_BLOCKED_ACCOUNTS="Personal,personal@example.com"
+```
+
 ### MCP Client Configuration
 
 #### VS Code Configuration

@@ -51,6 +51,9 @@ func HandleCreateReply(ctx context.Context, request *mcp.CallToolRequest, input 
 	if input.Account == "" || input.MessageID == 0 || input.Content == "" || len(input.MailboxPath) == 0 {
 		return nil, nil, fmt.Errorf("account, message_id, content, and mailbox_path are required")
 	}
+	if err := enforceAccountAccess(input.Account); err != nil {
+		return nil, nil, err
+	}
 	contentFormat, err := ValidateAndNormalizeContentFormat(input.ContentFormat)
 	if err != nil {
 		return nil, nil, err

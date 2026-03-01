@@ -53,5 +53,10 @@ func HandleGetSelectedMessages(ctx context.Context, request *mcp.CallToolRequest
 		return nil, nil, err
 	}
 
-	return nil, data, nil
+	filteredData, err := filterMessagesByAccountField(data, "account")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return nil, filteredData, nil
 }

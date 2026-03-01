@@ -38,6 +38,10 @@ func RegisterDeleteOutgoingMessage(srv *mcp.Server) {
 }
 
 func HandleDeleteOutgoingMessage(ctx context.Context, request *mcp.CallToolRequest, input DeleteOutgoingMessageInput) (*mcp.CallToolResult, any, error) {
+	if err := denyIDOnlyToolWhenPolicyEnabled("delete_outgoing_message"); err != nil {
+		return nil, nil, err
+	}
+
 	// Prepare arguments for JXA
 	inputJSON, err := json.Marshal(input)
 	if err != nil {

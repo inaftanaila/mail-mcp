@@ -59,6 +59,9 @@ func HandleReplaceReply(ctx context.Context, request *mcp.CallToolRequest, input
 	if input.OutgoingID == 0 || input.MessageID == 0 || input.Account == "" || len(input.MailboxPath) == 0 {
 		return nil, nil, fmt.Errorf("outgoing_id, message_id, account, and mailbox_path are required")
 	}
+	if err := enforceAccountAccess(input.Account); err != nil {
+		return nil, nil, err
+	}
 	if err := mac.EnsureAccessibility(); err != nil {
 		return nil, nil, err
 	}

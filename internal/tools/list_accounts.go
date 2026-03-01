@@ -49,5 +49,10 @@ func HandleListAccounts(ctx context.Context, request *mcp.CallToolRequest, input
 		return nil, nil, fmt.Errorf("failed to execute list_accounts: %w", err)
 	}
 
-	return nil, data, nil
+	filteredData, err := filterListAccountsData(data)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return nil, filteredData, nil
 }
