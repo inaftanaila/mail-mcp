@@ -307,4 +307,9 @@ func registerToolHandlers() {
 		_, data, err := tools.HandleFindMessages(context.Background(), nil, input)
 		return handleResult(data, err)
 	}
+
+	opts.GlobalOpts.Tool.ArchiveMessage.Handler = func(input tools.ArchiveMessageInput) error {
+		_, data, err := tools.HandleArchiveMessage(context.Background(), nil, input)
+		return handleResult(data, err)
+	}
 }

@@ -22,4 +22,5 @@ func RegisterAll(srv *mcp.Server) {
 	RegisterReplaceOutgoingMessage(srv)
 	RegisterDeleteOutgoingMessage(srv)
 	RegisterDeleteDraft(srv)
+	RegisterArchiveMessage(srv)
 }
