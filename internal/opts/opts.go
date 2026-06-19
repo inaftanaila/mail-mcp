@@ -125,6 +125,7 @@ type ToolCmd struct {
 	DeleteOutgoingMessage  DeleteOutgoingMessageCmd  `command:"delete_outgoing_message" description:"Deletes an outgoing message"`
 	FindMessages           FindMessagesCmd           `command:"find_messages" description:"Find messages in a mailbox"`
 	ArchiveMessage         ArchiveMessageCmd         `command:"archive_message" description:"Archives a message by moving it to the account's Archive mailbox"`
+	ArchiveMessages        ArchiveMessagesCmd        `command:"archive_messages" description:"Batch-archives messages by RFC822 Message-ID, moving them to the account's Archive mailbox"`
 }
 
 // ListAccountsCmd represents the 'tool list_accounts' command
@@ -249,6 +250,20 @@ type ArchiveMessageCmd struct {
 func (c *ArchiveMessageCmd) Execute(args []string) error {
 	if c.Handler != nil {
 		return c.Handler(c.ArchiveMessageInput)
+	}
+	return nil
+}
+
+// ArchiveMessagesCmd represents the 'tool archive_messages' command
+type ArchiveMessagesCmd struct {
+	tools.ArchiveMessagesInput
+	Handler func(tools.ArchiveMessagesInput) error
+}
+
+// Execute runs the archive_messages tool command
+func (c *ArchiveMessagesCmd) Execute(args []string) error {
+	if c.Handler != nil {
+		return c.Handler(c.ArchiveMessagesInput)
 	}
 	return nil
 }

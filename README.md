@@ -844,6 +844,43 @@ Archives a message by moving it to the account's top-level `Archive` mailbox. Th
 
 **Error codes:** `MAIL_APP_NOT_RUNNING`, `ACCOUNT_NOT_FOUND`, `MAILBOX_NOT_FOUND`, `MESSAGE_NOT_FOUND`, `GMAIL_ARCHIVE_UNSUPPORTED`, `ARCHIVE_MAILBOX_NOT_FOUND`, `ARCHIVE_FAILED`.
 
+### archive_messages
+
+Batch-archives messages by moving them to the account's top-level `Archive` mailbox, located by their **RFC822 Message-ID** (the `messageId` field returned by `get_message_content`, not the numeric `id`). The source mailbox is enumerated once and every match is moved in a single Mail.app pass, so this is the efficient path for bulk inbox clears - prefer it over calling `archive_message` in a loop. The Archive target is resolved automatically; there is no archive-target parameter.
+
+**Parameters:**
+
+- `account` (string, required): Name of the email account the messages are in
+- `mailbox_path` (array of strings, required): Path to the source mailbox (e.g., `["Inbox"]` or `["Inbox", "Subfolder"]`). Case-sensitive.
+- `message_ids` (array of strings, required): RFC822 Message-IDs of the messages to archive. Angle brackets are optional; matching is tolerant of surrounding `<>`.
+
+**Behaviour:**
+
+- **Exchange / iCloud / IMAP (non-Gmail):** moves each found message to the top-level `Archive` mailbox on the account.
+- **Per-message status:** each requested Message-ID is reported as `archived` (found and moved), `not_found` (no message with that Message-ID in the source mailbox), or `error` (found but the move threw).
+- **No Archive mailbox:** the whole call errors with `ARCHIVE_MAILBOX_NOT_FOUND`. It never falls back to Trash or Inbox.
+- **Gmail:** Apple Mail cannot relocate Gmail messages. The whole call hard-errors with `GMAIL_ARCHIVE_UNSUPPORTED` and moves nothing - use the standalone `gmail_archive.py` IMAP tool instead.
+
+**Output (success):**
+
+```json
+{
+  "account": "Work",
+  "resolvedArchive": "Archive",
+  "from": ["Inbox"],
+  "archived": 2,
+  "not_found": 1,
+  "error": 0,
+  "results": [
+    { "messageId": "<a@example.com>", "status": "archived" },
+    { "messageId": "<b@example.com>", "status": "archived" },
+    { "messageId": "<missing@example.com>", "status": "not_found" }
+  ]
+}
+```
+
+**Error codes:** `MAIL_APP_NOT_RUNNING`, `ACCOUNT_NOT_FOUND`, `MAILBOX_NOT_FOUND`, `GMAIL_ARCHIVE_UNSUPPORTED`, `ARCHIVE_MAILBOX_NOT_FOUND`, `ARCHIVE_FAILED`.
+
 ## Upgrading
 
 **Note on Permissions & Service Restart:** After upgrading, macOS may prompt you to re-grant **Automation** and **Accessibility** permissions to the new binary. If features like "Get Selected Messages" or "Create Reply Draft" stop working, please re-enable these permissions in **System Settings > Privacy & Security**. You may also need to restart the service for the changes to take effect.
