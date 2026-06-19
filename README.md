@@ -812,6 +812,38 @@ When `content_format` is set to "markdown", the content is parsed as Markdown an
 - Plain text content works as Markdown with no special characters
 - Use `content_format: "plain"` to explicitly bypass Markdown parsing
 
+### archive_message
+
+Archives a message by moving it to the account's top-level `Archive` mailbox. The Archive target is resolved automatically - there is no archive-target parameter.
+
+**Parameters:**
+
+- `account` (string, required): Name of the email account the message is in
+- `mailbox_path` (array of strings, required): Path to the source mailbox (e.g., `["Inbox"]` or `["Inbox", "Subfolder"]`). Case-sensitive.
+- `message_id` (integer, required): The unique Mail.app ID of the message to archive
+
+**Behaviour:**
+
+- **Exchange / iCloud / IMAP (non-Gmail):** moves the message to the top-level `Archive` mailbox on the account.
+- **Already in Archive:** returns success as a noop (`strategy: "noop-already-archived"`, `moved: false`).
+- **No Archive mailbox:** errors with `ARCHIVE_MAILBOX_NOT_FOUND`. It never falls back to Trash or Inbox.
+- **Gmail:** Apple Mail cannot relocate Gmail messages (move/delete are no-ops). The tool hard-errors with `GMAIL_ARCHIVE_UNSUPPORTED` and does NOT touch the message - use the standalone `gmail_archive.py` IMAP tool instead.
+
+**Output (success):**
+
+```json
+{
+  "strategy": "move-to-archive",
+  "resolvedArchive": "Archive",
+  "account": "Work",
+  "from": ["Inbox"],
+  "message_id": 123456,
+  "moved": true
+}
+```
+
+**Error codes:** `MAIL_APP_NOT_RUNNING`, `ACCOUNT_NOT_FOUND`, `MAILBOX_NOT_FOUND`, `MESSAGE_NOT_FOUND`, `GMAIL_ARCHIVE_UNSUPPORTED`, `ARCHIVE_MAILBOX_NOT_FOUND`, `ARCHIVE_FAILED`.
+
 ## Upgrading
 
 **Note on Permissions & Service Restart:** After upgrading, macOS may prompt you to re-grant **Automation** and **Accessibility** permissions to the new binary. If features like "Get Selected Messages" or "Create Reply Draft" stop working, please re-enable these permissions in **System Settings > Privacy & Security**. You may also need to restart the service for the changes to take effect.
